@@ -7,13 +7,13 @@ cURL
 ## Author
 Abbas Ali
 
-(http://twitter.com/abbasali1)
+<http://twitter.com/abbasali1>
 
-(http://www.sanisoft.com/blog/author/abbasali)
+<http://www.sanisoft.com/blog/author/abbasali>
 
 ## Usage and guide
 
-(http://www.sanisoft.com/blog/2010/04/05/amazon-s3-upload-behavior-cakephp)
+<http://www.sanisoft.com/blog/2010/03/29/amazon-s3-upload-behavior-cakephp>
 
 ## Reference
 Reference code,

@@ -40,9 +40,9 @@
  *   - http://www.ad7six.com/entries/view/69/Generic-File-Upload-Behavior by Andy Dawson
  *
  * @author Abbas Ali <abbas@sanisoft.com>
- * @link http://www.sanisoft.com/blog/2010/04/05/amazon-s3-upload-behavior-cakephp
+ * @link http://www.sanisoft.com/blog/2010/03/29/amazon-s3-upload-behavior-cakephp
  * @version 1.0.0
- * @lastmodified 2010-04-05
+ * @lastmodified 2010-03-29
  */
 class S3UploadBehavior extends ModelBehavior
 {
@@ -76,6 +76,8 @@ class S3UploadBehavior extends ModelBehavior
     function setup(&$model, $settings = array()) {
         // Initialize behavior's default settings
         $default = array(
+                    's3_access_key'      => '',
+                    's3_secret_key'      => '',
                     'formfield'          => '',
                     's3_path'            => '',
                     'allowed_ext'        => array('jpg', 'jpeg', 'png', 'gif'),
@@ -129,6 +131,7 @@ class S3UploadBehavior extends ModelBehavior
             }
             // If no file was selected to upload then continue
             if (empty($model->data[$model->name][$formfield]['name'])) {
+                unset($model->data[$model->name][$formfield]);
                 continue;
             }
             // Self explainatory
@@ -235,10 +238,18 @@ class S3UploadBehavior extends ModelBehavior
      */
     function __uploadToS3(&$model) {
         App::import('Vendor', 'S3', array('file' => 'S3.php'));
-        // Instantiate the class
-        $aws = new S3($this->__accessKey, $this->__secretKey);
+
         // Run a loop on all files to be uploaded to S3
         foreach ($this->files as $field => $file) {
+            $accessKey = $this->__accessKey;
+            $secretKey = $this->__secretKey;
+            // If we have S3 credentials for this field/file
+            if (!empty($this->settings[$model->name][$field]['s3_access_key']) && !empty($this->settings[$model->name][$field]['s3_secret_key'])) {
+                $accessKey = $this->settings[$model->name][$field]['s3_access_key'];
+                $secretKey = $this->settings[$model->name][$field]['s3_secret_key'];
+            }
+            // Instantiate the class
+            $aws = new S3($accessKey, $secretKey);
             // If there is an old file to be removed
             if (!empty($file['old_filename'])) {
                 $aws->deleteObject($this->settings[$model->name][$field]['s3_bucket'], $file['old_filename']);
@@ -271,16 +282,23 @@ class S3UploadBehavior extends ModelBehavior
      */
     function beforeDelete(&$model) {
         App::import('Vendor', 'S3', array('file' => 'S3.php'));
-        // Instantiate the class
-        $aws = new S3($this->__accessKey, $this->__secretKey);
         
         foreach ($this->settings[$model->name] as $field => $options) {
+            $accessKey = $this->__accessKey;
+            $secretKey = $this->__secretKey;
+            // If we have S3 credentials for this field/file
+            if (!empty($options['s3_access_key']) && !empty($options['s3_secret_key'])) {
+                $accessKey = $options['s3_access_key'];
+                $secretKey = $options['s3_secret_key'];
+            }
+            // Instantiate the class
+            $aws = new S3($accessKey, $secretKey);
             // Get model's data for filename of photo
             $filename = $model->field($model->name . '.' . $field);
 
             // If filename is found then delete original photo
             if (!empty($filename)) {
-                $aws->deleteObject($this->settings[$model->name][$field]['s3_bucket'], $filename);
+                $aws->deleteObject($options['s3_bucket'], $filename);
             }
         }
         // Return true by default
