@@ -74,10 +74,14 @@ class S3UploadBehavior extends ModelBehavior
      * @param array $settings Settings for behavior
      */
     function setup(&$model, $settings = array()) {
+        
+        // allow to use a config file in app/config/s3.php instead of editing the class directly.
+        Configure::load('s3');
+		
         // Initialize behavior's default settings
         $default = array(
-                    's3_access_key'      => '',
-                    's3_secret_key'      => '',
+                    's3_access_key'      => Configure::read('s3.access_key'),
+                    's3_secret_key'      => Configure::read('s3.secret_key'),
                     'formfield'          => '',
                     's3_path'            => '',
                     'allowed_ext'        => array('jpg', 'jpeg', 'png', 'gif'),
