@@ -58,14 +58,14 @@ class S3UploadBehavior extends ModelBehavior
      *
      * @var string
      */
-    public $__accessKey = 'set your aws access key here';
+    private $__accessKey = 'set your aws access key here';
     
     /**
      * AWS secret key
      *
      * @var string
      */
-    public $__secretKey = 'set your aws secret key here';
+    private $__secretKey = 'set your aws secret key here';
     
     /**
      * Method called automatically by model's constructor
