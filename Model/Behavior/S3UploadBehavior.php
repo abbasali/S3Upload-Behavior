@@ -123,7 +123,6 @@ class S3UploadBehavior extends ModelBehavior
      * @return boolean Return's true if save should continue else false
      */
     public function beforeSave(&$model) {
-    	// die('mothafucker');
         foreach ($this->settings[$model->name] as $field => $options) {
             $formfield = $field;
             if (!empty($options['formfield'])) {
