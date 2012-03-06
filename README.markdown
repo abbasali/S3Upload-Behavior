@@ -1,4 +1,7 @@
-# Amazon S3 Upload behavior for CakePHP
+# Amazon S3 Upload behavior for CakePHP 2.0+
+
+## NOTE
+This will only work with CakePHP 2.0+. Do not use this with 1.x.
 
 ## Requirements
 PHP5.2, 

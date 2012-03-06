@@ -51,21 +51,21 @@ class S3UploadBehavior extends ModelBehavior
      *
      * @var array
      */
-    var $files = array();
+    public $files = array();
     
     /**
      * AWS access key
      *
      * @var string
      */
-    var $__accessKey = 'set your aws access key here';
+    private $__accessKey = 'set your aws access key here';
     
     /**
      * AWS secret key
      *
      * @var string
      */
-    var $__secretKey = 'set your aws secret key here';
+    private $__secretKey = 'set your aws secret key here';
     
     /**
      * Method called automatically by model's constructor
@@ -73,11 +73,15 @@ class S3UploadBehavior extends ModelBehavior
      * @param object $model Object of model
      * @param array $settings Settings for behavior
      */
-    function setup(&$model, $settings = array()) {
+    public function setup(&$model, $settings = array()) {
+        
+        // allow to use a config file in app/config/s3.php instead of editing the class directly.
+        Configure::load('s3');
+		
         // Initialize behavior's default settings
         $default = array(
-                    's3_access_key'      => '',
-                    's3_secret_key'      => '',
+                    's3_access_key'      => Configure::read('s3.access_key'),
+                    's3_secret_key'      => Configure::read('s3.secret_key'),
                     'formfield'          => '',
                     's3_path'            => '',
                     'allowed_ext'        => array('jpg', 'jpeg', 'png', 'gif'),
@@ -107,7 +111,7 @@ class S3UploadBehavior extends ModelBehavior
      * @param string $accessKey AWS access key
      * @param string $secretKey AWS secret key
      */
-    function setS3Credentials(&$model, $accessKey, $secretKey) {
+    public function setS3Credentials(&$model, $accessKey, $secretKey) {
         $this->__accessKey = $accessKey;
         $this->__secretKey = $secretKey;
     }//end setS3Credentials()
@@ -118,7 +122,7 @@ class S3UploadBehavior extends ModelBehavior
      * @param object $model Object of model
      * @return boolean Return's true if save should continue else false
      */
-    function beforeSave(&$model) {
+    public function beforeSave(&$model) {
         foreach ($this->settings[$model->name] as $field => $options) {
             $formfield = $field;
             if (!empty($options['formfield'])) {
@@ -236,9 +240,9 @@ class S3UploadBehavior extends ModelBehavior
      * @param object $model Object of current model
      * @return boolean
      */
-    function __uploadToS3(&$model) {
+    private function __uploadToS3(&$model) {
         App::import('Vendor', 'S3', array('file' => 'S3.php'));
-
+		
         // Run a loop on all files to be uploaded to S3
         foreach ($this->files as $field => $file) {
             $accessKey = $this->__accessKey;
@@ -280,7 +284,7 @@ class S3UploadBehavior extends ModelBehavior
      * @param object $model Object of model
      * @return boolean Return's true if delete should continue, false otherwise
      */
-    function beforeDelete(&$model) {
+    public function beforeDelete(&$model) {
         App::import('Vendor', 'S3', array('file' => 'S3.php'));
         
         foreach ($this->settings[$model->name] as $field => $options) {
